@@ -1,0 +1,39 @@
+- name: playbook apache 
+  hosts: apache    
+  become: yes
+  vars:    
+     ansible_sudo_pass: AntoineHassane28*82
+        
+  tasks: 
+
+  - name: Installation d'apache 
+    apt: 
+      name:  
+      state: present 
+  
+
+  - name: Création du site
+    ansible.builtin.file:
+      path: /var/www/html/tours.sportludique.fr
+      state: directory
+      mode: '0755'
+      
+
+  - name: création du virtualhost
+    ansible.builtin.template:
+        src: /home/antoinehassane/ansible/templates/tours.sportludique.fr.conf
+        dest: /etc/apache2/sites-available/
+   
+
+  - name: Activation du nouveau vhosts
+    ansible.builtin.command: a2ensite tours.sportludique.fr.conf
+ 
+  - name: Désactivation du vhosts par défaut
+    ansible.builtin.command: "/usr/sbin/a2dissite 000-default.conf"  
+
+ 
+  - name: reload apache
+    service:
+        name: apache2
+        state: reloaded
+
